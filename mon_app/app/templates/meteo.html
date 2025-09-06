@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Météo{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Météo</h1>
+<p class="text-gray-600">Vous pouvez intégrer un widget météo côté client (par exemple un iframe d'un service gratuit) ou une API publique.</p>
+<div class="card">
+  <iframe class="w-full h-80" src="https://widget.timeanddate.com/clock/i8n8xpl7/n2408/tlma/fn6/fs20/fcfff/tc16a34a/pc16a34a/tt0/tw1/tm1/ts1/tb4" title="Widget météo" loading="lazy"></iframe>
+</div>
+{% endblock %}

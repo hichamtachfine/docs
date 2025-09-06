@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Matières{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Matières — {{ groupe.nom }}</h1>
+<div class="grid-auto">
+  {% for m in matieres %}
+  <a class="card hover:ring-2 hover:ring-green-200" href="{{ url_for('main.lecons', matiere_id=m.id) }}">
+    <div class="font-semibold">{{ m.nom }}</div>
+    <div class="text-sm text-gray-500">{{ m.lecons|length }} documents</div>
+  </a>
+  {% else %}
+  <p>Aucune matière. <span class="pill">Admin: ajoutez des matières</span></p>
+  {% endfor %}
+</div>
+{% endblock %}

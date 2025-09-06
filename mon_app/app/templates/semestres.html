@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Semestres{% endblock %}
+
+
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Semestres</h1>
+<div class="grid-auto">
+  {% for s in semestres %}
+  <a class="btn-green-card" href="{{ url_for('main.groupes', semestre_id=s.id) }}">
+    <div class="font-semibold">{{ s.nom }}</div>
+    <div class="text-sm">{{ s.groupes|length }} groupes</div>
+  </a>
+  {% else %}
+  <p>Aucun semestre. <span class="pill">Admin: ajoutez-en dans l’Administration</span></p>
+  {% endfor %}
+</div>
+{% endblock %}

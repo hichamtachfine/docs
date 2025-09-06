@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Connexion{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto card">
+  <h1 class="text-xl font-semibold mb-4">Connexion</h1>
+  <form method="post" class="space-y-4">
+    <input class="w-full border p-2 rounded" name="email" type="email" placeholder="Email" required>
+    <input class="w-full border p-2 rounded" name="password" type="password" placeholder="Mot de passe" required>
+    <button class="btn w-full">Se connecter</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Administration{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Administration</h1>
+
+<div class="grid md:grid-cols-3 gap-4">
+  <!-- Add/Delete Semestre -->
+  <div class="card">
+    <h2 class="font-semibold mb-2">Ajouter un semestre</h2>
+    <form method="post" class="space-y-2">
+      <input type="hidden" name="action" value="add_semestre">
+      <input class="w-full border p-2 rounded" name="semestre_nom" placeholder="Semestre (ex: Semestre 1)" required>
+      <button class="btn w-full">Ajouter</button>
+    </form>
+    <form method="post" class="space-y-2 mt-2">
+      <input type="hidden" name="action" value="delete_semestre">
+      <select name="semestre_id" class="w-full border p-2 rounded" required>
+        {% for s in semestres %}<option value="{{ s.id }}">{{ s.nom }}</option>{% endfor %}
+      </select>
+      <button class="btn w-full">Supprimer</button>
+    </form>
+  </div>
+
+  <!-- Create/Delete Groupes -->
+  <div class="card">
+    <h2 class="font-semibold mb-2">Créer plusieurs groupes</h2>
+    <form method="post" class="space-y-2">
+      <input type="hidden" name="action" value="add_groupes">
+      <label class="text-xs">Semestre</label>
+      <select name="semestre_id" class="w-full border p-2 rounded" required>
+        {% for s in semestres %}<option value="{{ s.id }}">{{ s.nom }}</option>{% endfor %}
+      </select>
+      <input class="w-full border p-2 rounded" name="base_nom" placeholder="Base du nom (ex: Groupe)">
+      <input class="w-full border p-2 rounded" name="nombre" type="number" min="1" value="1" required>
+      <button class="btn w-full">Créer</button>
+    </form>
+    <form method="post" class="space-y-2 mt-2">
+      <input type="hidden" name="action" value="delete_groupe">
+      <select name="groupe_id" class="w-full border p-2 rounded" required>
+        {% for g in groupes %}<option value="{{ g.id }}">{{ g.nom }} ({{ g.semestre.nom }})</option>{% endfor %}
+      </select>
+      <button class="btn w-full">Supprimer</button>
+    </form>
+  </div>
+
+  <!-- Add/Delete Matière -->
+  <div class="card">
+    <h2 class="font-semibold mb-2">Ajouter une matière</h2>
+    <form method="post" class="space-y-2">
+      <input type="hidden" name="action" value="add_matiere">
+      <label class="text-xs">Groupe</label>
+      <select name="groupe_id" class="w-full border p-2 rounded" required>
+        {% for g in groupes %}<option value="{{ g.id }}">{{ g.nom }} ({{ g.semestre.nom }})</option>{% endfor %}
+      </select>
+      <input class="w-full border p-2 rounded" name="matiere_nom" placeholder="Matière (ex: Mathématiques)" required>
+      <button class="btn w-full">Ajouter</button>
+    </form>
+    <form method="post" class="space-y-2 mt-2">
+      <input type="hidden" name="action" value="delete_matiere">
+      <select name="matiere_id" class="w-full border p-2 rounded" required>
+        {% for m in matieres %}<option value="{{ m.id }}">{{ m.nom }} ({{ m.groupe.nom }})</option>{% endfor %}
+      </select>
+      <button class="btn w-full">Supprimer</button>
+    </form>
+  </div>
+
+  <!-- User Management -->
+  <div class="card md:col-span-3">
+    <h2 class="font-semibold mb-2">Gérer les comptes utilisateurs</h2>
+    <form method="post" class="space-y-2">
+      <input type="hidden" name="action" value="create_user">
+      <input class="w-full border p-2 rounded" name="user_name" placeholder="Nom" required>
+      <input class="w-full border p-2 rounded" name="user_email" placeholder="Email" required>
+      <input class="w-full border p-2 rounded" name="user_password" type="password" placeholder="Mot de passe" required>
+      <select name="user_role" class="w-full border p-2 rounded">
+        <option value="etudiant">Etudiant</option>
+        <option value="prof">Professeur</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button class="btn w-full">Créer</button>
+    </form>
+    <form method="post" class="space-y-2 mt-2">
+      <input type="hidden" name="action" value="delete_user">
+      <select name="user_id" class="w-full border p-2 rounded">
+        {% for u in users %}<option value="{{ u.id }}">{{ u.name }} ({{ u.role }})</option>{% endfor %}
+      </select>
+      <button class="btn w-full">Supprimer</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

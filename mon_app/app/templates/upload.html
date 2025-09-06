@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Upload Document{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto card">
+  <h1 class="text-xl font-semibold mb-4">Uploader un document PDF</h1>
+  <form method="post" enctype="multipart/form-data" class="space-y-4">
+    <input class="w-full border p-2 rounded" name="titre" type="text" placeholder="Titre du document" required>
+    <label class="block text-sm">Type</label>
+    <select name="type_doc" class="w-full border p-2 rounded">
+      <option value="lecon">Leçon</option>
+      <option value="exercice">Exercice</option>
+    </select>
+
+    <label class="block text-sm">Sélectionnez la hiérarchie :</label>
+    <div class="grid md:grid-cols-3 gap-2">
+      <div>
+        <label class="text-xs">Semestre</label>
+        <select id="semestre" class="w-full border p-2 rounded" onchange="onSemestreChange()">
+          <option value="">--</option>
+          {% for s in semestres %}
+          <option value="{{ s.id }}">{{ s.nom }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="text-xs">Groupe</label>
+        <select id="groupe" class="w-full border p-2 rounded" onchange="onGroupeChange()">
+          <option value="">--</option>
+          {% for s in semestres %}
+            {% for g in s.groupes %}
+              <option data-sem="{{ s.id }}" value="{{ g.id }}">{{ g.nom }}</option>
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="text-xs">Matière</label>
+        <select id="matiere" name="matiere_id" class="w-full border p-2 rounded">
+          <option value="">--</option>
+        </select>
+      </div>
+    </div>
+
+    <input class="w-full border p-2 rounded" name="pdf" type="file" accept="application/pdf" required>
+    <button class="btn w-full">Uploader</button>
+  </form>
+</div>
+
+<script>
+function onSemestreChange(){
+  const sid = document.getElementById('semestre').value;
+  const g = document.getElementById('groupe');
+  for (const opt of g.options){
+    if(!opt.getAttribute('data-sem')) continue;
+    opt.hidden = opt.getAttribute('data-sem') !== sid;
+  }
+  document.getElementById('matiere').innerHTML = '<option value="">--</option>';
+}
+async function onGroupeChange(){
+  const gid = document.getElementById('groupe').value;
+  const r = await fetch(`/api/matieres?groupe_id=${gid}`);
+  const data = await r.json();
+  const m = document.getElementById('matiere');
+  m.innerHTML = '<option value="">--</option>';
+  data.matieres.forEach(x=>{
+    const o = document.createElement('option');
+    o.value = x.id; o.textContent = x.nom;
+    m.appendChild(o);
+  });
+}
+</script>
+{% endblock %}

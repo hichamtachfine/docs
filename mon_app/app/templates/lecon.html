@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-2xl font-semibold mb-4">{{ lecon.titre }}</h2>
+
+<!-- Show lesson pages as images -->
+{% for img_url in image_urls %}
+  <img src="{{ img_url }}" style="width:100%; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
+{% endfor %}
+{% if lecon.fichier_pdf %}
+<div class="mt-4">
+  <a href="{{ url_for('main.get_pdf', lecon_id=lecon.id) }}" 
+     target="_blank"
+     class="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700">
+     📄 Ouvrir le PDF
+  </a>
+</div>
+{% else %}
+<p class="text-gray-500 mt-4">Aucun fichier disponible pour cette leçon.</p>
+{% endif %}
+{% endblock %}

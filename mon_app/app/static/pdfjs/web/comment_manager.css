@@ -1,0 +1,596 @@
+/* Copyright 2025 Mozilla Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#commentManagerDialog {
+  --comment-actions-button-icon: url(images/comment-actionsButton.svg);
+  --comment-close-button-icon: url(images/comment-closeButton.svg);
+
+  --default-dialog-bg-color: #ffff98;
+  --dialog-base-color: var(--default-dialog-bg-color);
+  --dialog-bg-color: color-mix(in srgb, var(--dialog-base-color), white 30%);
+  --dialog-border-color: var(--dialog-base-color);
+
+  --menuitem-bg-color: transparent;
+  --menuitem-fg-color: black;
+  --menuitem-hover-bg-color: #3383e7;
+  --menuitem-hover-fg-color: white;
+
+  --comment-text-input-bg: white;
+  --comment-text-input-fg: black;
+  --comment-text-input-border: #0060df;
+  --comment-focus-outline-color: #0060df;
+
+  --hover-filter: brightness(0.9);
+  --text-primary-color: #15141a;
+
+  --button-secondary-bg-color: #f0f0f4;
+  --button-secondary-active-bg-color: color-mix(
+    in srgb,
+    var(--button-secondary-bg-color),
+    black 14%
+  );
+  --button-secondary-hover-bg-color: color-mix(
+    in srgb,
+    var(--button-secondary-bg-color),
+    black 7%
+  );
+
+  --button-primary-bg-color: #0060df;
+  --button-primary-fg-color: #fbfbfe;
+  --button-primary-active-bg-color: #0050c0;
+  --button-primary-hover-bg-color: #0250bb;
+
+  --menu-bg-color: rgb(253 250 244);
+  --menu-button-border-color: transparent;
+  --menu-button-focus-outline-color: var(--comment-text-input-border);
+
+  @media screen and (forced-colors: active) {
+    --hover-filter: none;
+    --text-primary-color: CanvasText;
+    --button-secondary-bg-color: HighlightText;
+    --button-secondary-active-bg-color: HighlightText;
+    --button-secondary-hover-bg-color: HighlightText;
+    --button-primary-bg-color: ButtonText;
+    --button-primary-fg-color: HighlightText;
+    --button-primary-active-bg-color: SelectedItem;
+    --button-primary-hover-bg-color: SelectedItem;
+
+    --menu-button-border-color: Canvas;
+    --menu-button-focus-outline-color: CanvasText;
+  }
+
+  width: 308px;
+  padding: 8px 16px 16px;
+  overflow: visible;
+  position: absolute;
+  margin: 0;
+
+  border-radius: 4px;
+  border: 1px solid var(--dialog-border-color);
+  background: var(--dialog-bg-color);
+  box-shadow: 0 2px 14px 0 rgb(58 57 68 / 0.2);
+
+  .mainContainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+
+    *:focus-visible {
+      outline: 2px solid var(--comment-focus-outline-color);
+      outline-offset: 0;
+    }
+
+    #commentManagerToolbar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 8px;
+      align-self: stretch;
+
+      cursor: move;
+
+      > button {
+        color-scheme: light;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: none;
+
+        cursor: pointer;
+
+        &::before {
+          content: "";
+          display: inline-block;
+          width: 100%;
+          height: 100%;
+          mask-repeat: no-repeat;
+          mask-position: center;
+        }
+
+        &#commentActionsButton::before {
+          mask-image: var(--comment-actions-button-icon);
+        }
+
+        &#commentCloseButton::before {
+          mask-image: var(--comment-close-button-icon);
+        }
+
+        > span {
+          display: inline-block;
+          width: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
+
+      menu {
+        width: max-content;
+        min-width: 90px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1px;
+        padding: 5px 6px;
+        cursor: auto;
+        z-index: 1;
+        margin: 0;
+
+        position: absolute;
+        top: 8px;
+        right: -6.5px;
+
+        border-radius: 6px;
+        border: 0.5px solid #b4b4b6;
+        background-color: var(--menu-bg-color);
+        box-shadow:
+          1px -1px 0 0 #fff inset,
+          -1px 1px 0 0 #fff inset,
+          -1px -1px 0 0 #fff inset,
+          1px 1px 0 0 #fff inset,
+          0 0 15px 0 rgb(0 0 0 / 0.25);
+
+        button {
+          background-color: var(--menuitem-bg-color);
+          width: 100%;
+          height: 24px;
+          padding: 0;
+          box-sizing: border-box;
+          display: flex;
+          border: 2px solid var(--menu-button-border-color);
+          color: var(--menuitem-fg-color);
+
+          &:hover {
+            background-color: var(--menuitem-hover-bg-color);
+            color: var(--menuitem-hover-fg-color);
+          }
+
+          &:is(:focus-visible, :focus) {
+            outline: none;
+            border: 2px solid var(--menu-button-focus-outline-color);
+          }
+
+          &:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+          }
+
+          span {
+            align-content: center;
+            width: 100%;
+            max-width: min-content;
+            padding-inline: 8px;
+            color: inherit;
+            text-align: start;
+            font: menu;
+            font-size: 15px;
+            font-weight: 400;
+            line-height: normal;
+          }
+        }
+      }
+    }
+
+    #commentManagerTextInput {
+      width: 100%;
+      min-height: 132px;
+      resize: none;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+
+      border-radius: 4px;
+      border: 2px solid var(--comment-text-input-border);
+      background-color: var(--comment-text-input-bg);
+      color: var(--comment-text-input-fg);
+    }
+
+    #commentManagerTextView {
+      width: 100%;
+      height: max-content;
+      resize: none;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+
+      border: none;
+      background-color: transparent;
+      color: var(--comment-text-input-fg);
+    }
+
+    .dialogButtonsGroup {
+      gap: 8px;
+
+      #commentManagerSaveButton:disabled {
+        background-color: color-mix(
+          in srgb,
+          var(--button-primary-disabled-bg-color),
+          transparent 50%
+        );
+        border-color: color-mix(
+          in srgb,
+          var(--button-primary-disabled-border-color),
+          transparent 50%
+        );
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.annotationLayer.disabled :is(.annotationCommentButton) {
+  display: none;
+}
+
+:is(.annotationLayer, .annotationEditorLayer) {
+  .annotationCommentButton {
+    --comment-button-bg: light-dark(white, #1c1b22);
+    --comment-button-fg: light-dark(#5b5b66, #fbfbfe);
+    --comment-button-active-bg: light-dark(#0041a4, #a6ecf4);
+    --comment-button-active-fg: light-dark(white, #15141a);
+    --comment-button-hover-bg: light-dark(#0053cb, #61dce9);
+    --comment-button-hover-fg: light-dark(white, #15141a);
+    --comment-button-selected-bg: light-dark(#0062fa, #00cadb);
+    --comment-button-border-color: light-dark(#8f8f9d, #bfbfc9);
+    --comment-button-active-border-color: var(--comment-button-active-bg);
+    --comment-button-focus-border-color: light-dark(#cfcfd8, #3a3944);
+    --comment-button-hover-border-color: var(--comment-button-hover-bg);
+    --comment-button-selected-border-color: var(--comment-button-selected-bg);
+    --comment-button-selected-fg: light-dark(white, #15141a);
+    --comment-button-dim: 24px;
+    --comment-button-box-shadow:
+      0 0.25px 0.75px 0 light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.2)),
+      0 2px 6px 0 light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.4));
+    --comment-button-focus-outline-color: light-dark(#0062fa, #00cadb);
+
+    @media screen and (forced-colors: active) {
+      --comment-button-bg: Canvas;
+      --comment-button-fg: CanvasText;
+      --comment-button-hover-bg: Highlight;
+      --comment-button-hover-fg: ButtonFace;
+      --comment-button-active-bg: Highlight;
+      --comment-button-active-fg: ButtonFace;
+      --comment-button-border-color: ButtonBorder;
+      --comment-button-box-shadow: none;
+      --comment-button-focus-outline-color: CanvasText;
+      --comment-button-selected-bg: ButtonBorder;
+      --comment-button-selected-fg: ButtonFace;
+    }
+
+    position: absolute;
+    width: var(--comment-button-dim);
+    height: var(--comment-button-dim);
+    background-color: var(--comment-button-bg);
+    border-radius: 6px 6px 6px 0;
+    border: 1px solid var(--comment-button-border-color);
+    box-shadow: var(--comment-button-box-shadow);
+    cursor: auto;
+    z-index: 1;
+    padding: 4px;
+    margin: 0;
+    box-sizing: border-box;
+    pointer-events: auto;
+
+    &:dir(rtl) {
+      border-radius: 6px 6px 0;
+    }
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      mask-repeat: no-repeat;
+      mask-size: cover;
+      mask-image: var(--comment-edit-button-icon);
+      background-color: var(--comment-button-fg);
+      margin: 0;
+      padding: 0;
+      transform: scaleX(var(--dir-factor));
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--comment-button-focus-outline-color);
+      outline-offset: 1px;
+      border-color: var(--comment-button-focus-border-color);
+    }
+
+    &:hover {
+      background-color: var(--comment-button-hover-bg) !important;
+      border-color: var(--comment-button-hover-border-color);
+
+      &::before {
+        background-color: var(--comment-button-hover-fg);
+      }
+    }
+
+    &:active {
+      background-color: var(--comment-button-active-bg) !important;
+      border-color: var(--comment-button-active-border-color);
+
+      &::before {
+        background-color: var(--comment-button-active-fg);
+      }
+    }
+
+    &.selected {
+      background-color: var(--comment-button-selected-bg) !important;
+      border-color: var(--comment-button-selected-border-color);
+
+      &::before {
+        background-color: var(--comment-button-selected-fg);
+      }
+    }
+  }
+}
+
+#editorCommentsSidebar {
+  --comment-close-button-icon: url(images/comment-closeButton.svg);
+
+  --comment-date-fg-color: light-dark(
+    rgb(21 20 26 / 0.69),
+    rgb(251 251 254 / 0.69)
+  );
+  --comment-bg-color: light-dark(#f9f9fb, #1c1b22);
+  --comment-hover-bg-color: light-dark(
+    rgb(21 20 26 / 0.14),
+    rgb(251 251 254 / 0.14)
+  );
+  --comment-active-bg-color: light-dark(
+    rgb(21 20 26 / 0.21),
+    rgb(251 251 254 / 0.21)
+  );
+  --comment-border-color: light-dark(#f0f0f4, #52525e);
+  --comment-focus-outline-color: light-dark(#0062fa, #00cadb);
+  --comment-fg-color: light-dark(#15141a, #fbfbfe);
+  --comment-count-bg-color: light-dark(#e2f7ff, #00317e);
+  --comment-indicator-active-fg-color: light-dark(#0041a4, #a6ecf4);
+  --comment-indicator-focus-fg-color: light-dark(#5b5b66, #fbfbfe);
+  --comment-indicator-hover-fg-color: light-dark(#0053cb, #61dce9);
+  --comment-indicator-selected-fg-color: light-dark(#0062fa, #00cadb);
+
+  @media screen and (forced-colors: active) {
+    --comment-date-fg-color: CanvasText;
+    --comment-bg-color: Canvas;
+    --comment-hover-bg-color: SelectedItemText;
+    --comment-active-bg-color: SelectedItemText;
+    --comment-border-color: CanvasText;
+    --comment-fg-color: CanvasText;
+    --comment-count-bg-color: Canvas;
+    --comment-indicator-active-fg-color: SelectedItem;
+    --comment-indicator-focus-fg-color: CanvasText;
+    --comment-indicator-hover-fg-color: CanvasText;
+    --comment-indicator-selected-fg-color: SelectedItem;
+  }
+
+  display: flex;
+  width: 239px;
+  height: auto;
+  min-width: 180px;
+  max-width: 632px;
+  padding-bottom: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+
+  #editorCommentsSidebarHeader {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .commentCount {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      user-select: none;
+
+      #editorCommentsSidebarTitle {
+        font: menu;
+        font-style: normal;
+        font-weight: 590;
+        line-height: normal;
+        font-size: 17px;
+        color: var(--comment-fg-color);
+      }
+
+      #editorCommentsSidebarCount {
+        padding: 0 4px;
+        border-radius: 4px;
+        background-color: var(--comment-count-bg-color);
+
+        color: var(--comment-fg-color);
+        text-align: center;
+
+        font: menu;
+        font-size: 13px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+      }
+    }
+
+    #editorCommentsSidebarCloseButton {
+      width: 32px;
+      height: 32px;
+      padding: 8px;
+      border: none;
+      background: none;
+      cursor: pointer;
+
+      &::before {
+        content: "";
+        display: inline-block;
+        width: 100%;
+        height: 100%;
+        mask-repeat: no-repeat;
+        mask-position: center;
+        mask-image: var(--comment-close-button-icon);
+        background-color: var(--comment-fg-color);
+      }
+
+      &:hover {
+        background-color: var(--comment-hover-bg-color);
+      }
+
+      &:active {
+        background-color: var(--comment-active-bg-color);
+      }
+
+      > span {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+      }
+    }
+  }
+
+  #editorCommentsSidebarList {
+    display: flex;
+    width: auto;
+    padding: 1px 16px 0;
+    gap: 10px;
+    flex: 1 0 0;
+    align-self: stretch;
+    align-items: flex-start;
+    flex-direction: column;
+    list-style-type: none;
+
+    .sidebarComment {
+      display: flex;
+      width: auto;
+      padding: 8px 16px 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      align-self: stretch;
+      gap: 4px;
+
+      border-radius: 8px;
+      border: 0.5px solid var(--comment-border-color);
+      background-color: var(--comment-bg-color);
+
+      &:not(.noComments) {
+        &:hover {
+          background-color: var(--comment-hover-bg-color);
+
+          time::after {
+            display: inline-block;
+            background-color: var(--comment-indicator-hover-fg-color);
+          }
+        }
+
+        &:active {
+          background-color: var(--comment-active-bg-color);
+
+          time::after {
+            display: inline-block;
+            background-color: var(--comment-indicator-active-fg-color);
+          }
+        }
+
+        &:is(:focus, :focus-visible) time::after {
+          display: inline-block;
+          background-color: var(--comment-indicator-focus-fg-color);
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--comment-focus-outline-color);
+          outline-offset: 2px;
+        }
+
+        &.selected {
+          .sidebarCommentText {
+            max-height: fit-content;
+            -webkit-line-clamp: unset;
+          }
+
+          time::after {
+            display: inline-block;
+            background-color: var(--comment-indicator-selected-fg-color);
+          }
+        }
+      }
+
+      .sidebarCommentText {
+        font: menu;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        font-size: 15px;
+        width: 100%;
+        height: fit-content;
+        max-height: 80px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        overflow-wrap: break-word;
+      }
+
+      &.noComments .sidebarCommentText {
+        max-height: fit-content;
+        -webkit-line-clamp: unset;
+        user-select: none;
+      }
+
+      time {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+
+        font: menu;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
+        font-size: 13px;
+
+        &::after {
+          content: "";
+          display: none;
+          width: 16px;
+          height: 16px;
+          mask-repeat: no-repeat;
+          mask-position: center;
+          mask-image: var(--comment-edit-button-icon);
+          transform: scaleX(var(--dir-factor));
+        }
+      }
+    }
+  }
+}

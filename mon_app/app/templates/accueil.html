@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Accueil — Campus Docs{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Derniers ajouts</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<div class="grid-auto">
+  {% for l in recents %}
+  <div class="card">
+    <div class="text-sm text-gray-500">{{ l.type_doc|capitalize }} • {{ l.created_at.strftime('%d/%m/%Y') }}</div>
+    <div class="font-semibold mt-1">{{ l.titre }}</div>
+    <a href="{{ url_for('main.view_pdf', lecon_id=l.id) }}" class="link mt-2 inline-block">Ouvrir</a>
+  </div>
+  {% else %}
+  <p>Aucun document pour le moment.</p>
+  {% endfor %}
+</div>
+{% endblock %}

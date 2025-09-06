@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Gestion des leçons{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Gestion des leçons et exercices</h1>
+
+<form method="get" class="space-y-4 mb-4">
+  <!-- Semestre -->
+  <select name="semestre_id" onchange="this.form.submit()" class="border p-2 rounded w-full">
+    <option value="">Sélectionner un semestre</option>
+    {% for s in semestres %}
+      <option value="{{ s.id }}" {% if s.id == selected_semestre %}selected{% endif %}>{{ s.nom }}</option>
+    {% endfor %}
+  </select>
+
+  <!-- Groupe -->
+  {% if groupes %}
+    <select name="groupe_id" onchange="this.form.submit()" class="border p-2 rounded w-full">
+      <option value="">Sélectionner un groupe</option>
+      {% for g in groupes %}
+        <option value="{{ g.id }}" {% if g.id == selected_groupe %}selected{% endif %}>{{ g.nom }}</option>
+      {% endfor %}
+    </select>
+  {% elif selected_semestre %}
+    <p>Aucun groupe disponible pour ce semestre.</p>
+  {% endif %}
+
+  <!-- Matière -->
+  {% if matieres %}
+    <select name="matiere_id" onchange="this.form.submit()" class="border p-2 rounded w-full">
+      <option value="">Sélectionner une matière</option>
+      {% for m in matieres %}
+        <option value="{{ m.id }}" {% if m.id == selected_matiere %}selected{% endif %}>{{ m.nom }}</option>
+      {% endfor %}
+    </select>
+  {% elif selected_groupe %}
+    <p>Aucune matière disponible pour ce groupe.</p>
+  {% endif %}
+</form>
+
+<!-- List of lessons -->
+{% if lecons %}
+  <div class="grid gap-4">
+    {% for l in lecons %}
+      <div class="card flex justify-between items-center">
+        <div>{{ l.titre }} ({{ l.type_doc }})</div>
+        <form method="post">
+          <input type="hidden" name="lecon_id" value="{{ l.id }}">
+          <button type="submit" class="btn-green">Supprimer</button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+{% elif selected_matiere %}
+  <p>Aucune leçon ou exercice disponible pour cette matière.</p>
+{% endif %}
+
+{% endblock %}
